@@ -9,8 +9,12 @@ public class ShopImpl implements Shop {
     private String name;
     private String owner;
     private boolean shopStatus;
-    private Map<Long, ShopEntryImpl> products = new HashMap<>();
+    private Map<Long, ShopImpl.ShopEntryImpl> products = new HashMap<>();
     
+    public ShopImpl(String name, String owner) {
+        this.name = name;
+        this.owner = owner;
+    }
     
     @Override
     public String getName() {
@@ -77,6 +81,54 @@ public class ShopImpl implements Shop {
         return null;
     }
     private class ShopEntryImpl{
+        private Product product;
+        private int quantity;
+        private float price;
     
+        private ShopEntryImpl(Product product, int quantity, float price) {
+            this.product = product;
+            this.quantity = quantity;
+            this.price = price;
+        }
+    
+        public Product getProduct() {
+            return this.product;
+        }
+    
+        public void setProduct(Product product) {
+            this.product = product;
+        }
+    
+        public int getQuantity() {
+            return this.quantity;
+        }
+    
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
+        }
+    
+        public void increaseQuantity(int amount){
+            this.quantity += amount;
+        }
+        public void decreaseQuantity(int amount){
+            this.quantity -= amount;
+        }
+    
+        public float getPrice() {
+            return this.price;
+        }
+    
+        public void setPrice(float price) {
+            this.price = price;
+        }
+    
+        @Override
+        public String toString() {
+            return "ShopEntryImpl{" +
+                "product=" + product +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
+        }
     }
 }
