@@ -1,6 +1,6 @@
 package com.codecool.api;
 
-public class ClothingProduct extends Product{
+public class ClothingProduct extends Product {
     
     private String material;
     private String type;

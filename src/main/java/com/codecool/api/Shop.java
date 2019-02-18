@@ -9,13 +9,13 @@ public interface Shop {
     public boolean isOpen();
     public void open();
     public void close();
-    public List<Product> getProducts();
-    public Product findByName(String name);
-    public float getPrice(long barcode);
-    public boolean hasProduct(long barcode);
-    public void addNewProduct(Product product, int quantity, float price);
-    public void addProduct(long barcode,int quantity);
-    public Product byProduct(long barcode);
-    public List<Product> buyProducts(long barcode, int quantity);
+    public List<Product> getProducts() throws ShopIsClosedException;
+    public Product findByName(String name) throws NoSuchProductException, ShopIsClosedException;
+    public float getPrice(long barcode) throws ShopIsClosedException, NoSuchProductException;
+    public boolean hasProduct(long barcode) throws ShopIsClosedException;
+    public void addNewProduct(long barcode, Product product, int quantity, float price) throws ShopIsClosedException, ProductAlreadyExistsException;
+    public void addProduct(long barcode,int quantity) throws ShopIsClosedException, NoSuchProductException;
+    public Product byProduct(long barcode) throws ShopIsClosedException, NoSuchProductException, OutOfStockException;
+    public List<Product> buyProducts(long barcode, int quantity) throws ShopIsClosedException, NoSuchProductException, OutOfStockException;
     public String toString();
 }

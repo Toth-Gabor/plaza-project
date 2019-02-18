@@ -13,7 +13,7 @@ public class FoodProduct extends Product {
         this.bestBefore = bestBefore;
     }
     
-    public boolean isStillConsumable(){
+    public boolean isStillConsumable(){ // még nem jó!
         return false;
     }
     
