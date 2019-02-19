@@ -44,50 +44,45 @@ public class ShopImpl implements Shop {
     
     @Override
     public List<Product> getProducts() throws ShopIsClosedException {
-        if (shopStatus){
+        if (isOpen()){
             List<Product> productsList = new ArrayList<>();
             for (ShopEntryImpl value : products.values()) {
                 productsList.add(value.getProduct());
             }
             return productsList;
-        } else {
-            throw new ShopIsClosedException("Please open the shop first!");
         }
+        throw new ShopIsClosedException("Please open the shop first!");
     }
     
     @Override
     public Product findByName(String name) throws NoSuchProductException, ShopIsClosedException {
-        if (shopStatus){
+        if (isOpen()){
             for (ShopEntryImpl value : products.values()){
                 if (value.getProduct().getName().equals(name)){
                     return value.getProduct();
-                } else {
-                    throw new NoSuchProductException("There is not any product with this name!");
                 }
             }
-        } else {
-            throw new ShopIsClosedException("Please open the shop first!");
+            throw new NoSuchProductException("There is not any product with this name!");
         }
-        return null; // ezt még heggeszteni kellene!
+        throw new ShopIsClosedException("Please open the shop first!");
     }
     
     @Override
     public float getPrice(long barcode) throws ShopIsClosedException, NoSuchProductException {
-        if (shopStatus){
-            if (products.get(barcode) != null){
-                return products.get(barcode).getPrice();
-            } else {
-                throw new NoSuchProductException("There is not any product with this barcode!");
+        if (isOpen()){
+            for (ShopEntryImpl value : products.values()){
+                if (value.getProduct().getBarcode() == barcode){
+                    return value.getPrice();
+                }
             }
-        } else {
-            throw new ShopIsClosedException("Please open the shop first!");
+            throw new NoSuchProductException("There is not any product with this name!");
         }
-        
+        throw new ShopIsClosedException("Please open the shop first!");
     }
     
     @Override
     public boolean hasProduct(long barcode) throws ShopIsClosedException {
-        if (shopStatus){
+        if (isOpen()){
             if(products.containsKey(barcode)){
                 return true;
             } else {
@@ -98,12 +93,11 @@ public class ShopImpl implements Shop {
         }
         
     }
-    // a barcode-ot hozzá kellett adni?????
     @Override
-    public void addNewProduct(long barcode, Product product, int quantity, float price) throws ShopIsClosedException, ProductAlreadyExistsException {
-        if (shopStatus){
-            if(!products.containsKey(barcode)){
-                products.put(barcode, new ShopEntryImpl(product, quantity, price));
+    public void addNewProduct(Product product, int quantity, float price) throws ShopIsClosedException, ProductAlreadyExistsException {
+        if (isOpen()){
+            if(!products.containsKey(product.getBarcode())){
+                products.put(product.getBarcode(), new ShopEntryImpl(product, quantity, price));
             } else {
                 throw new ProductAlreadyExistsException("This product already exists!");
             }
@@ -114,7 +108,7 @@ public class ShopImpl implements Shop {
     
     @Override
     public void addProduct(long barcode, int quantity) throws ShopIsClosedException, NoSuchProductException {
-        if (shopStatus){
+        if (isOpen()){
             if (products.get(barcode) != null){
                 products.get(barcode).setQuantity(quantity);
             } else {
@@ -127,7 +121,7 @@ public class ShopImpl implements Shop {
     
     @Override
     public Product byProduct(long barcode) throws ShopIsClosedException, NoSuchProductException, OutOfStockException {
-        if (shopStatus){
+        if (isOpen()){
             if (products.get(barcode) != null){
                 if (products.get(barcode).getQuantity() >= 1){
                     products.get(barcode).decreaseQuantity(1);
@@ -146,7 +140,7 @@ public class ShopImpl implements Shop {
     @Override
     public List<Product> buyProducts(long barcode, int quantity) throws ShopIsClosedException, NoSuchProductException, OutOfStockException {
         List<Product> buyedProducts = new ArrayList<>();
-        if (shopStatus){
+        if (isOpen()){
             if (products.get(barcode) != null){
                 if (products.get(barcode).getQuantity() >= quantity){
                     products.get(barcode).decreaseQuantity(quantity);
@@ -165,7 +159,7 @@ public class ShopImpl implements Shop {
     
     @Override
     public String toString() {
-        return name + " shop" +'\'' + " owner: " + owner + '\'' + " shopStatus: " + shopStatus;
+        return " " + name + " shop";
     }
     
     private class ShopEntryImpl{

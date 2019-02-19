@@ -1,10 +1,11 @@
 package com.codecool.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlazaImpl implements Plaza {
     
-    private List<Shop> shops;
+    private List<Shop> shops = new ArrayList<>();
     private boolean openStatus;
     private String name;
     
@@ -27,40 +28,42 @@ public class PlazaImpl implements Plaza {
     
     @Override
     public void addShop(Shop shop) throws ShopAlreadyExistsException, PlazaIsClosedException{
-        if (shops.contains(shop)){
-            throw new ShopAlreadyExistsException("This shop already exists!");
-        } else if (!isOpen()){
-            throw new PlazaIsClosedException("The plaza is closed!");
+        if (isOpen()){
+            if (!shops.contains(shop)){
+                shops.add(shop);
+            } else {
+                throw new ShopAlreadyExistsException("This shop already exists!");
+            }
         } else {
-            shops.add(shop);
+            throw new PlazaIsClosedException("The plaza is closed!");
         }
     }
     
     @Override
     public void removeShop(Shop shop) throws NoSuchShopException, PlazaIsClosedException{
-        if (!isOpen()){
-            throw new PlazaIsClosedException("The plaza is closed!");
-        } else if (!shops.contains(shop)){
-            throw new NoSuchShopException("No such shop!");
+        if (isOpen()) {
+            if (shops.contains(shop)) {
+                shops.remove(shop);
+            } else {
+                throw new NoSuchShopException("No such shop!");
+            }
         } else {
-            shops.remove(shop);
+            throw new PlazaIsClosedException("The plaza is closed!");
         }
     }
     
     @Override
     public Shop findShopByName(String name) throws NoSuchShopException, PlazaIsClosedException{
-        if (!isOpen()){
-            throw new PlazaIsClosedException("The plaza is closed!");
-        } else {
+        if (isOpen()){
             for (Shop shop : shops) {
                 if (shop.getName().equals(name)){
                     return shop;
-                } else {
-                    throw new NoSuchShopException("No such shop!");
                 }
             }
+            throw new NoSuchShopException("No such shop!");
+        } else {
+            throw new PlazaIsClosedException("The plaza is closed!");
         }
-        return null;
     }
     
     @Override
