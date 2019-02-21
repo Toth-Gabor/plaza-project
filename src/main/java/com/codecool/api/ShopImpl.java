@@ -1,11 +1,12 @@
 package com.codecool.api;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ShopImpl implements Shop {
+public class ShopImpl implements Shop, Serializable {
     
     private String name;
     private String owner;

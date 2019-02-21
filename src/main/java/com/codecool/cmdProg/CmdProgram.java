@@ -2,6 +2,9 @@ package com.codecool.cmdProg;
 
 import com.codecool.api.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,13 +15,14 @@ public class CmdProgram {
     private Scanner scanner = new Scanner(System.in);
     private PlazaImpl plaza;
     private Shop currentShop;
+    private FileManager fm = new FileManager();
     
     public CmdProgram(String[] args) {
     
     }
     
     public void run() {
-        String[] menuOptions = new String[]{"to create a new plaza.", "to exit"};
+        String[] menuOptions = new String[]{"to create a new plaza.", "to enter the default plaza", "to save", "to load", "to exit"};
         Menu menu = new Menu("Plaza project", menuOptions);
         String plazaName;
         
@@ -27,7 +31,7 @@ public class CmdProgram {
             switch (scanner.nextLine()) {
                 case "1":
                     while(true){
-                        System.out.println("Please give a name for this plaza");
+                        System.out.print("Please give a name for this plaza: ");
                         plazaName = scanner.nextLine();
                         if(plazaName.length() != 0){
                             break;
@@ -37,10 +41,21 @@ public class CmdProgram {
                     plazaMenu();
                     break;
                 case "2":
-                    System.exit(0);
+                    try {
+                        defaultPlaza();
+                    } catch (ShopAlreadyExistsException | PlazaIsClosedException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
-                default:
-                    System.out.println("Not good if you see this print!");
+                case "3":
+                    fm.fileWriter(plaza);
+                    break;
+                case "4":
+                    plaza = fm.fileReader();
+                    plazaMenu();
+                    break;
+                case "5":
+                    System.exit(0);
                     break;
             }
         }
@@ -52,6 +67,15 @@ public class CmdProgram {
         return plaza;
     }
     
+    private void defaultPlaza() throws ShopAlreadyExistsException, PlazaIsClosedException {
+        plaza = new PlazaImpl("Default");
+        plaza.open();
+        plaza.addShop(new ShopImpl("Fashion", "Mr X"));
+        plaza.addShop(new ShopImpl("Faloda", "Jumanji"));
+        plazaMenu();
+        
+    }
+    
     private void plazaMenu() {
         String[] plazaMenuOptions = new String[]{"to list all shops.",
                                                 "to add a new shop.",
@@ -60,6 +84,7 @@ public class CmdProgram {
                                                 "to open the plaza.",
                                                 "to close the plaza.",
                                                 "to check if the plaza is open or not.",
+                                                "go back to main menu",
                                                 "leave plaza."};
     
         Menu plazaMenu = new Menu(("Welcome to the " + plaza.getName() + " plaza! Press"), plazaMenuOptions);
@@ -106,6 +131,8 @@ public class CmdProgram {
                     checkPlazaIsOpen();
                     break;
                 case "8":
+                    return;
+                case "9":
                     System.out.println("Thank you for visit " + plaza.getName() + " plaza!");
                     System.exit(0);
                     break;
@@ -125,8 +152,8 @@ public class CmdProgram {
         } else {
             throw new PlazaIsClosedException("Please open the plaza before list all shops!");
         }
-        
     }
+    
     private void addNewShop() throws PlazaIsClosedException, ShopAlreadyExistsException {
         String shopName;
         String shopOwnerName;
@@ -200,10 +227,14 @@ public class CmdProgram {
                             }
                             break;
                         case "2":
-        
+                            try {
+                                findProductByName();
+                            } catch (ShopIsClosedException | NoSuchProductException e) {
+                                System.out.println(e.getMessage());
+                            }
                             break;
                         case "3":
-                            currentShop.getOwner();
+                            System.out.println("The shop owner is " + currentShop.getOwner());
                             break;
                         case "4":
                             currentShop.open();
@@ -212,7 +243,11 @@ public class CmdProgram {
                             currentShop.close();
                             break;
                         case "6":
-        
+                            try {
+                                addNewProductToTheShop();
+                            } catch (ShopIsClosedException e) {
+                                System.out.println(e.getMessage());
+                            }
                             break;
                         case "7":
         
@@ -225,11 +260,8 @@ public class CmdProgram {
                             break;
                         case "10":
                             return;
-                            
                     }
                 }
-                
-                
             } else {
                 throw new NoSuchShopException("The plaza has not got any shop with this name!");
             }
@@ -238,6 +270,7 @@ public class CmdProgram {
         }
     }
     private void listAvailableProducts() throws ShopIsClosedException, TheShopIsEmptyException {
+        System.out.println("product list mérete: " + currentShop.getProducts().size());
         if (currentShop.isOpen()){
             if (currentShop.getProducts().size() != 0){
                 for (Product product : currentShop.getProducts()) {
@@ -249,6 +282,100 @@ public class CmdProgram {
         } else {
             throw new ShopIsClosedException("Please open the shop first!");
         }
+    }
+    
+    private void findProductByName() throws ShopIsClosedException, NoSuchProductException {
+        System.out.print("Please give the shop name:");
+        String name = scanner.nextLine();
+        if (currentShop.isOpen()){
+            if(currentShop.getProducts().contains(currentShop.findByName(name))){
+                System.out.println(currentShop.findByName(name));
+            } else {
+                throw new NoSuchProductException("No product by the given name!");
+            }
+        } else {
+            throw new ShopIsClosedException("Please open the shop first!");
+        }
+    }
+    
+    private void addNewProductToTheShop() throws ShopIsClosedException {
+        String productType;
+        FoodProduct food = null;
+        ClothingProduct clothingProduct = null;
+    
+        if (currentShop.isOpen()){
+            while(true){
+                System.out.print("Please choose a product type:[food or clothing]: ");
+                productType = scanner.nextLine();
+                
+                if (productType.toLowerCase().equals("food")){
+                    try {
+                        addFoodProduct(currentShop);
+                    } catch (ParseException | ProductAlreadyExistsException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                } else if (productType.toLowerCase().equals("clothing")){
+                    try {
+                        addClothingProduct(currentShop);
+                    } catch (ProductAlreadyExistsException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+        } else {
+            throw new ShopIsClosedException("Please open the shop first!");
+        }
+    }
+    
+    private void addFoodProduct(Shop shop) throws NumberFormatException, ParseException, ProductAlreadyExistsException, ShopIsClosedException {
+        String[] questions = new String[]{"Give a barcode: ",
+                                        "Give the food name: ",
+                                        "Give a manufacturer: ",
+                                        "Give the calories: ",
+                                        "Give the experience date [yyyy-MM-dd]: "};
+        Long barcode;
+        Date date;
+        
+        System.out.print("Give a barcode: ");
+        barcode = Long.valueOf(scanner.nextLine());
+        
+        System.out.print("Give the food name: ");
+        String name = scanner.nextLine();
+        System.out.print("Give a manufacturer: ");
+        String manufacturer = scanner.nextLine();
+        System.out.print("Give the calories: ");
+        int calories = Integer.parseInt(scanner.nextLine());
+        System.out.print("Give the experience date [yyyy-MM-dd]: ");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        date = df.parse(scanner.nextLine());
+        System.out.print("Give the quantity: ");
+        int quantity = Integer.parseInt(scanner.nextLine());
+        System.out.print("Give the price/product: ");
+        Float price = Float.valueOf(scanner.nextLine());
+    
+        shop.addNewProduct(new FoodProduct(barcode, name, manufacturer, calories, date), quantity, price);
+    }
+    
+    private void addClothingProduct(Shop shop) throws NumberFormatException, ProductAlreadyExistsException, ShopIsClosedException {
+        String[] questions = new String[]{"Give the clothes name: ",
+                                        "Give a manufacturer: ",
+                                        "Give the material: ",
+                                        "Give the type: "};
+        String[] answers = new String[questions.length];
+        Long barcode;
+        System.out.print("Give a barcode: ");
+        barcode = Long.valueOf(scanner.nextLine());
+        for (int i = 0; i < questions.length; i++) {
+            System.out.print(questions[i]);
+            answers[i] = scanner.nextLine();
+        }
+        System.out.print("Give the quantity: ");
+        int quantity = Integer.parseInt(scanner.nextLine());
+        System.out.print("Give the price/product: ");
+        Float price = Float.valueOf(scanner.nextLine());
+        shop.addNewProduct(new ClothingProduct(barcode, answers[0], answers[1], answers[2], answers[3]), quantity, price);
     }
 }
 

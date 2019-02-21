@@ -1,8 +1,9 @@
 package com.codecool.api;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class FoodProduct extends Product {
+public class FoodProduct extends Product implements Serializable {
     
     private int calories;
     private Date bestBefore;
@@ -23,12 +24,9 @@ public class FoodProduct extends Product {
     
     @Override
     public String toString() {
-        return "FoodProduct{" +
-            "calories=" + calories +
-            ", bestBefore=" + bestBefore +
-            ", barcode=" + barcode +
-            ", name='" + name + '\'' +
-            ", manufacturer='" + manufacturer + '\'' +
-            '}';
+        return "Food barcode: " + barcode + ", name: " + name +
+                ", has " + calories + " calories " + ", made by: " +
+                manufacturer + ", best before: " + bestBefore;
+
     }
 }

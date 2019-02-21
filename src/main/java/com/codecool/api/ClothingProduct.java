@@ -1,6 +1,8 @@
 package com.codecool.api;
 
-public class ClothingProduct extends Product {
+import java.io.Serializable;
+
+public class ClothingProduct extends Product implements Serializable {
     
     private String material;
     private String type;
@@ -21,12 +23,8 @@ public class ClothingProduct extends Product {
     
     @Override
     public String toString() {
-        return "ClothingProduct{" +
-            "material='" + material + '\'' +
-            ", type='" + type + '\'' +
-            ", barcode=" + barcode +
-            ", name='" + name + '\'' +
-            ", manufacturer='" + manufacturer + '\'' +
-            '}';
+        return "Clothing barcode: " + barcode + ", name: " + name +
+        ", made of " + material + ", made by: " +
+            manufacturer + ", type is: " + type;
     }
 }

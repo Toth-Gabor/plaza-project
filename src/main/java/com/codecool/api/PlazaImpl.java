@@ -1,9 +1,10 @@
 package com.codecool.api;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlazaImpl implements Plaza {
+public class PlazaImpl implements Plaza , Serializable {
     
     private List<Shop> shops = new ArrayList<>();
     private boolean openStatus;
