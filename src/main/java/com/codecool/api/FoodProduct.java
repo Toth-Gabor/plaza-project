@@ -24,7 +24,7 @@ public class FoodProduct extends Product implements Serializable {
     
     @Override
     public String toString() {
-        return "Food barcode: " + barcode + ", name: " + name +
+        return "Food, barcode: " + barcode + ", name: " + name +
                 ", has " + calories + " calories " + ", made by: " +
                 manufacturer + ", best before: " + bestBefore;
 

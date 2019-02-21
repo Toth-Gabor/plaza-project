@@ -11,7 +11,7 @@ public class ShopImpl implements Shop, Serializable {
     private String name;
     private String owner;
     private boolean shopStatus;
-    private Map<Long, ShopImpl.ShopEntryImpl> products = new HashMap<>();
+    public Map<Long, ShopImpl.ShopEntryImpl> products = new HashMap<>();
     
     public ShopImpl(String name, String owner) {
         this.name = name;
@@ -41,6 +41,14 @@ public class ShopImpl implements Shop, Serializable {
     @Override
     public void close() {
         this.shopStatus = false;
+    }
+    
+    @Override
+    public int getQuantity(Long barcode) throws NoSuchProductException{
+        if (products.get(barcode) != null){
+            return products.get(barcode).getQuantity();
+        }
+        throw new NoSuchProductException("There is not any product with this barcode!");
     }
     
     @Override
@@ -163,7 +171,7 @@ public class ShopImpl implements Shop, Serializable {
         return " " + name + " shop";
     }
     
-    private class ShopEntryImpl{
+    private class ShopEntryImpl implements Serializable{
         private Product product;
         private int quantity;
         private float price;

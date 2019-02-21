@@ -22,7 +22,7 @@ public class CmdProgram {
     }
     
     public void run() {
-        String[] menuOptions = new String[]{"to create a new plaza.", "to enter the default plaza", "to save", "to load", "to exit"};
+        String[] menuOptions = new String[]{"to create a new plaza.", "to enter the default plaza", "to load saved plaza", "to exit"};
         Menu menu = new Menu("Plaza project", menuOptions);
         String plazaName;
         
@@ -43,18 +43,16 @@ public class CmdProgram {
                 case "2":
                     try {
                         defaultPlaza();
-                    } catch (ShopAlreadyExistsException | PlazaIsClosedException e) {
+                    } catch (ShopAlreadyExistsException | PlazaIsClosedException | ProductAlreadyExistsException |
+                            ShopIsClosedException | ParseException e) {
                         System.out.println(e.getMessage());
                     }
                     break;
                 case "3":
-                    fm.fileWriter(plaza);
-                    break;
-                case "4":
                     plaza = fm.fileReader();
                     plazaMenu();
                     break;
-                case "5":
+                case "4":
                     System.exit(0);
                     break;
             }
@@ -67,11 +65,16 @@ public class CmdProgram {
         return plaza;
     }
     
-    private void defaultPlaza() throws ShopAlreadyExistsException, PlazaIsClosedException {
+    private void defaultPlaza() throws ShopAlreadyExistsException, PlazaIsClosedException, ProductAlreadyExistsException, ShopIsClosedException, ParseException {
         plaza = new PlazaImpl("Default");
         plaza.open();
         plaza.addShop(new ShopImpl("Fashion", "Mr X"));
         plaza.addShop(new ShopImpl("Faloda", "Jumanji"));
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        plaza.getShop().get(1).open();
+        Date date = df.parse("2019-02-29");
+        plaza.getShop().get(1).addNewProduct(new FoodProduct
+            (1234, "Gyros", "Aladdin", 600, date), 10, 900);
         plazaMenu();
         
     }
@@ -84,6 +87,7 @@ public class CmdProgram {
                                                 "to open the plaza.",
                                                 "to close the plaza.",
                                                 "to check if the plaza is open or not.",
+                                                "to save current plaza",
                                                 "go back to main menu",
                                                 "leave plaza."};
     
@@ -131,8 +135,11 @@ public class CmdProgram {
                     checkPlazaIsOpen();
                     break;
                 case "8":
-                    return;
+                    fm.fileWriter(plaza);
+                    break;
                 case "9":
+                    return;
+                case "10":
                     System.out.println("Thank you for visit " + plaza.getName() + " plaza!");
                     System.exit(0);
                     break;
@@ -222,8 +229,8 @@ public class CmdProgram {
                         case "1":
                             try {
                                 listAvailableProducts();
-                            } catch (ShopIsClosedException | TheShopIsEmptyException e) {
-                                System.out.println(e.getMessage());
+                            } catch (ShopIsClosedException | TheShopIsEmptyException | NoSuchProductException e) {
+                                e.printStackTrace();
                             }
                             break;
                         case "2":
@@ -250,7 +257,11 @@ public class CmdProgram {
                             }
                             break;
                         case "7":
-        
+                            try {
+                                addExistingProduct();
+                            } catch (NoSuchProductException | ShopIsClosedException e) {
+                                System.out.println(e.getMessage());
+                            }
                             break;
                         case "8":
         
@@ -269,12 +280,11 @@ public class CmdProgram {
             throw new PlazaIsClosedException("The plaza is closed.");
         }
     }
-    private void listAvailableProducts() throws ShopIsClosedException, TheShopIsEmptyException {
-        System.out.println("product list mérete: " + currentShop.getProducts().size());
+    private void listAvailableProducts() throws ShopIsClosedException, TheShopIsEmptyException, NoSuchProductException {
         if (currentShop.isOpen()){
             if (currentShop.getProducts().size() != 0){
                 for (Product product : currentShop.getProducts()) {
-                    System.out.println(product);
+                    System.out.println(currentShop.getQuantity(product.getBarcode()) + " piece of " + product);
                 }
             } else {
                 throw new TheShopIsEmptyException("There are no product in this shop!");
@@ -376,6 +386,15 @@ public class CmdProgram {
         System.out.print("Give the price/product: ");
         Float price = Float.valueOf(scanner.nextLine());
         shop.addNewProduct(new ClothingProduct(barcode, answers[0], answers[1], answers[2], answers[3]), quantity, price);
+    }
+    
+    private void addExistingProduct() throws NoSuchProductException, ShopIsClosedException {
+        
+        System.out.print("Give the barcode of the item: ");
+        Long barcode = Long.valueOf(scanner.nextLine());
+        System.out.print("Give the quantity of the items: ");
+        int quantity = Integer.parseInt(scanner.nextLine());
+        currentShop.addProduct(barcode, quantity);
     }
 }
 

@@ -1,6 +1,8 @@
 package com.codecool.api;
 
-public abstract class Product {
+import java.io.Serializable;
+
+public abstract class Product implements Serializable {
     
     protected long barcode;
     protected String name;

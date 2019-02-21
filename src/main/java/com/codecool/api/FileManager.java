@@ -6,14 +6,14 @@ public class FileManager {
     
     private PlazaImpl plaza;
     
-    public void fileWriter(PlazaImpl plaza){
+    public void fileWriter(PlazaImpl currentPlaza){
         try {
             FileOutputStream fileOut = new FileOutputStream("plaza.ser");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(plaza);
+            out.writeObject(currentPlaza);
             out.close();
             fileOut.close();
-            System.out.printf("Serialized data is saved in plaza.ser");
+            System.out.println("Serialized data is saved in plaza.ser");
         } catch (IOException i) {
             i.printStackTrace();
         }
