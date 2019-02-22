@@ -44,6 +44,11 @@ public class ShopImpl implements Shop, Serializable {
     }
     
     @Override
+    public Product getProductByBarcode(Long barcode) throws NoSuchProductException {
+        return products.get(barcode).getProduct();
+    }
+    
+    @Override
     public int getQuantity(Long barcode) throws NoSuchProductException{
         if (products.get(barcode) != null){
             return products.get(barcode).getQuantity();

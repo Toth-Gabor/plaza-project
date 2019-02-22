@@ -4,8 +4,6 @@ import java.io.*;
 
 public class FileManager {
     
-    private PlazaImpl plaza;
-    
     public void fileWriter(PlazaImpl currentPlaza){
         try {
             FileOutputStream fileOut = new FileOutputStream("plaza.ser");
@@ -19,6 +17,7 @@ public class FileManager {
         }
     }
     public PlazaImpl fileReader(){
+        PlazaImpl plaza = null;
         try {
             FileInputStream fileIn = new FileInputStream("plaza.ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);

@@ -4,13 +4,14 @@ import com.codecool.api.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
 public class CmdProgram {
     
-    private List<Product> cart;
+    private List<Product> cart = new ArrayList<>();
     private List<Float> prices;
     private Scanner scanner = new Scanner(System.in);
     private PlazaImpl plaza;
@@ -88,7 +89,7 @@ public class CmdProgram {
                                                 "to close the plaza.",
                                                 "to check if the plaza is open or not.",
                                                 "to save current plaza",
-                                                "go back to main menu",
+                                                "to check bought items",
                                                 "leave plaza."};
     
         Menu plazaMenu = new Menu(("Welcome to the " + plaza.getName() + " plaza! Press"), plazaMenuOptions);
@@ -138,7 +139,12 @@ public class CmdProgram {
                     fm.fileWriter(plaza);
                     break;
                 case "9":
-                    return;
+                    try {
+                        showBoughtItems();
+                    } catch (NotBoughtAnyItemsException | PlazaIsClosedException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
                 case "10":
                     System.out.println("Thank you for visit " + plaza.getName() + " plaza!");
                     System.exit(0);
@@ -203,6 +209,20 @@ public class CmdProgram {
         }
     }
     
+    private void showBoughtItems() throws NotBoughtAnyItemsException, PlazaIsClosedException {
+        if (plaza.isOpen()){
+            if (cart.size() != 0){
+                for (Product product : cart) {
+                    System.out.println(product);
+                }
+            } else {
+                throw new NotBoughtAnyItemsException("There are not any bought item(s)!");
+            }
+        } else {
+            throw new PlazaIsClosedException("The plaza is closed.");
+        }
+    }
+    
     private void shopMenu() throws NoSuchShopException, PlazaIsClosedException {
         String[] shopMenuOptions = new String[]{"to list available products.",
                                                 "to find products by name.",
@@ -230,7 +250,7 @@ public class CmdProgram {
                             try {
                                 listAvailableProducts();
                             } catch (ShopIsClosedException | TheShopIsEmptyException | NoSuchProductException e) {
-                                e.printStackTrace();
+                                System.out.println(e.getMessage());
                             }
                             break;
                         case "2":
@@ -264,10 +284,18 @@ public class CmdProgram {
                             }
                             break;
                         case "8":
-        
+                            try {
+                                byProductByBarcode();
+                            } catch (NoSuchProductException | ShopIsClosedException | OutOfStockException e) {
+                                System.out.println(e.getMessage());
+                            }
                             break;
                         case "9":
-        
+                            try {
+                                checkProductPriceByBarcode();
+                            } catch (NoSuchProductException | ShopIsClosedException e) {
+                                System.out.println(e.getMessage());
+                            }
                             break;
                         case "10":
                             return;
@@ -283,9 +311,11 @@ public class CmdProgram {
     private void listAvailableProducts() throws ShopIsClosedException, TheShopIsEmptyException, NoSuchProductException {
         if (currentShop.isOpen()){
             if (currentShop.getProducts().size() != 0){
+                System.out.println("Shop items:");
                 for (Product product : currentShop.getProducts()) {
-                    System.out.println(currentShop.getQuantity(product.getBarcode()) + " piece of " + product);
+                    System.out.println(" " + currentShop.getQuantity(product.getBarcode()) + " piece of " + product);
                 }
+                System.out.println();
             } else {
                 throw new TheShopIsEmptyException("There are no product in this shop!");
             }
@@ -395,6 +425,20 @@ public class CmdProgram {
         System.out.print("Give the quantity of the items: ");
         int quantity = Integer.parseInt(scanner.nextLine());
         currentShop.addProduct(barcode, quantity);
+    }
+    
+    private void byProductByBarcode() throws NoSuchProductException, ShopIsClosedException, OutOfStockException {
+        System.out.print("Give a barcode: ");
+        Long barcode = Long.valueOf(scanner.nextLine());
+        System.out.println("Bought 1 " + currentShop.getProductByBarcode(barcode));
+        cart.add(currentShop.byProduct(barcode));
+        
+    }
+    private void checkProductPriceByBarcode() throws NoSuchProductException, ShopIsClosedException {
+        System.out.print("Give a barcode: ");
+        Long barcode = Long.valueOf(scanner.nextLine());
+        System.out.println(currentShop.getPrice(barcode));
+        System.out.println();
     }
 }
 

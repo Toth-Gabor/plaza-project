@@ -9,6 +9,7 @@ public interface Shop {
     public boolean isOpen();
     public void open();
     public void close();
+    public Product getProductByBarcode(Long barcode) throws NoSuchProductException;
     public int getQuantity(Long barcode) throws NoSuchProductException;
     public List<Product> getProducts() throws ShopIsClosedException;
     public Product findByName(String name) throws NoSuchProductException, ShopIsClosedException;

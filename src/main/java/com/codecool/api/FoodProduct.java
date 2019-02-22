@@ -1,6 +1,7 @@
 package com.codecool.api;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FoodProduct extends Product implements Serializable {
@@ -24,9 +25,10 @@ public class FoodProduct extends Product implements Serializable {
     
     @Override
     public String toString() {
-        return "Food, barcode: " + barcode + ", name: " + name +
+        SimpleDateFormat df = new SimpleDateFormat("yyyy MMM dd EEE");
+        return name + ", barcode: " + barcode +
                 ", has " + calories + " calories " + ", made by: " +
-                manufacturer + ", best before: " + bestBefore;
+                manufacturer + ", best before: " + df.format(bestBefore);
 
     }
 }
