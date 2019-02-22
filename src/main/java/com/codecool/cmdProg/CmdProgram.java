@@ -73,9 +73,27 @@ public class CmdProgram {
         plaza.addShop(new ShopImpl("Faloda", "Jumanji"));
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         plaza.getShop().get(1).open();
+        plaza.getShop().get(0).open();
+        plaza.getShop().get(0).addNewProduct(new ClothingProduct(2211, "T-shirt",
+            "Adidas", "cotton", "M-XXl") ,20, 7000);
+        plaza.getShop().get(0).addNewProduct(new ClothingProduct(2222, "Jacket",
+            "Nike", "cotton", "M-XXl") ,10, 11000);
+        plaza.getShop().get(0).addNewProduct(new ClothingProduct(2233, "Jogging",
+            "Puma", "mixed", "M-XXl") ,13, 8000);
+        plaza.getShop().get(0).addNewProduct(new ClothingProduct(2244, "Jeans",
+            "Lewis", "cotton", "50-58") ,8, 7000);
+        plaza.getShop().get(0).addNewProduct(new ClothingProduct(2255, "Shoes",
+            "Tisza", "Mixed", "40-45") ,20, 7000);
         Date date = df.parse("2019-02-29");
         plaza.getShop().get(1).addNewProduct(new FoodProduct
             (1234, "Gyros", "Aladdin", 600, date), 10, 900);
+        plaza.getShop().get(1).addNewProduct(new FoodProduct
+            (1123, "Kebab", "Anulu", 700, date), 12, 850);
+        plaza.getShop().get(1).addNewProduct(new FoodProduct
+            (1124, "Pita bread", "Aladdin", 200, date), 20, 300);
+        plaza.getShop().get(1).addNewProduct(new FoodProduct
+            (1125, "Baklava", "An Mualin", 500, date), 30, 400);
+        
         plazaMenu();
         
     }
@@ -340,8 +358,6 @@ public class CmdProgram {
     
     private void addNewProductToTheShop() throws ShopIsClosedException {
         String productType;
-        FoodProduct food = null;
-        ClothingProduct clothingProduct = null;
     
         if (currentShop.isOpen()){
             while(true){
@@ -375,11 +391,8 @@ public class CmdProgram {
                                         "Give a manufacturer: ",
                                         "Give the calories: ",
                                         "Give the experience date [yyyy-MM-dd]: "};
-        Long barcode;
-        Date date;
-        
         System.out.print("Give a barcode: ");
-        barcode = Long.valueOf(scanner.nextLine());
+        Long barcode = Long.valueOf(scanner.nextLine());
         
         System.out.print("Give the food name: ");
         String name = scanner.nextLine();
@@ -389,7 +402,7 @@ public class CmdProgram {
         int calories = Integer.parseInt(scanner.nextLine());
         System.out.print("Give the experience date [yyyy-MM-dd]: ");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        date = df.parse(scanner.nextLine());
+        Date date = df.parse(scanner.nextLine());
         System.out.print("Give the quantity: ");
         int quantity = Integer.parseInt(scanner.nextLine());
         System.out.print("Give the price/product: ");

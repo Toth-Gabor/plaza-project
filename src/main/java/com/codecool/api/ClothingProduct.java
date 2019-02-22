@@ -5,12 +5,12 @@ import java.io.Serializable;
 public class ClothingProduct extends Product implements Serializable {
     
     private String material;
-    private String type;
+    private String size;
     
-    public ClothingProduct(long barcode, String name, String manufacturer, String material, String type) {
+    public ClothingProduct(long barcode, String name, String manufacturer, String material, String size) {
         super(barcode, name, manufacturer);
         this.material = material;
-        this.type = type;
+        this.size = size;
     }
     
     public String getMaterial() {
@@ -18,13 +18,13 @@ public class ClothingProduct extends Product implements Serializable {
     }
     
     public String getType() {
-        return this.type;
+        return this.size;
     }
     
     @Override
     public String toString() {
         return "Clothing barcode: " + barcode + ", name: " + name +
         ", made of " + material + ", made by: " +
-            manufacturer + ", type is: " + type;
+            manufacturer + ", type is: " + size;
     }
 }
