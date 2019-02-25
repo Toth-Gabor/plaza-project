@@ -4,20 +4,35 @@ import java.util.List;
 
 public interface Shop {
     
-    public String getName();
-    public String getOwner();
-    public boolean isOpen();
-    public void open();
-    public void close();
-    public Product getProductByBarcode(Long barcode) throws NoSuchProductException;
-    public int getQuantity(Long barcode) throws NoSuchProductException;
-    public List<Product> getProducts() throws ShopIsClosedException;
-    public Product findByName(String name) throws NoSuchProductException, ShopIsClosedException;
-    public float getPrice(long barcode) throws ShopIsClosedException, NoSuchProductException;
-    public boolean hasProduct(long barcode) throws ShopIsClosedException;
-    public void addNewProduct(Product product, int quantity, float price) throws ShopIsClosedException, ProductAlreadyExistsException;
-    public void addProduct(long barcode,int quantity) throws ShopIsClosedException, NoSuchProductException;
-    public Product byProduct(long barcode) throws ShopIsClosedException, NoSuchProductException, OutOfStockException;
-    public List<Product> buyProducts(long barcode, int quantity) throws ShopIsClosedException, NoSuchProductException, OutOfStockException;
-    public String toString();
+    String getName();
+    
+    String getOwner();
+    
+    boolean isOpen();
+    
+    void open();
+    
+    void close();
+    
+    Product getProductByBarcode(Long barcode) throws NoSuchProductException;
+    
+    int getQuantity(Long barcode) throws NoSuchProductException;
+    
+    List<Product> getProducts() throws ShopIsClosedException;
+    
+    Product findByName(String name) throws NoSuchProductException, ShopIsClosedException;
+    
+    float getPrice(long barcode) throws ShopIsClosedException, NoSuchProductException;
+    
+    boolean hasProduct(long barcode) throws ShopIsClosedException;
+    
+    void addNewProduct(Product product, int quantity, float price) throws ShopIsClosedException, ProductAlreadyExistsException;
+    
+    void addProduct(long barcode, int quantity) throws ShopIsClosedException, NoSuchProductException;
+    
+    Product byProduct(long barcode) throws ShopIsClosedException, NoSuchProductException, OutOfStockException;
+    
+    List<Product> buyProducts(long barcode, int quantity) throws ShopIsClosedException, NoSuchProductException, OutOfStockException;
+    
+    String toString();
 }
